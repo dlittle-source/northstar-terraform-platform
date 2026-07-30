@@ -23,8 +23,12 @@ variable "availability_zones" {
   type        = list(string)
 
   validation {
-    condition     = length(var.availability_zones) >= 2
-    error_message = "At least two Availability Zones are required."
+    condition = (
+      length(var.availability_zones) >= 2 &&
+      length(distinct(var.availability_zones)) == length(var.availability_zones)
+    )
+
+    error_message = "Provide at least two unique Availability Zones."
   }
 }
 
@@ -33,8 +37,15 @@ variable "public_subnet_cidrs" {
   type        = list(string)
 
   validation {
-    condition     = length(var.public_subnet_cidrs) >= 2 && alltrue([for cidr in var.public_subnet_cidrs : can(cidrnetmask(cidr))])
-    error_message = "Provide at least two valid public subnet CIDR blocks."
+    condition = (
+      length(var.public_subnet_cidrs) == length(var.availability_zones) &&
+      alltrue([
+        for cidr in var.public_subnet_cidrs :
+        can(cidrnetmask(cidr))
+      ])
+    )
+
+    error_message = "public_subnet_cidrs must contain one valid CIDR for each Availability Zone."
   }
 }
 
@@ -43,8 +54,15 @@ variable "application_subnet_cidrs" {
   type        = list(string)
 
   validation {
-    condition     = length(var.application_subnet_cidrs) >= 2 && alltrue([for cidr in var.application_subnet_cidrs : can(cidrnetmask(cidr))])
-    error_message = "Provide at least two valid application subnet CIDR blocks."
+    condition = (
+      length(var.application_subnet_cidrs) == length(var.availability_zones) &&
+      alltrue([
+        for cidr in var.application_subnet_cidrs :
+        can(cidrnetmask(cidr))
+      ])
+    )
+
+    error_message = "application_subnet_cidrs must contain one valid CIDR for each Availability Zone."
   }
 }
 
@@ -53,8 +71,15 @@ variable "database_subnet_cidrs" {
   type        = list(string)
 
   validation {
-    condition     = length(var.database_subnet_cidrs) >= 2 && alltrue([for cidr in var.database_subnet_cidrs : can(cidrnetmask(cidr))])
-    error_message = "Provide at least two valid database subnet CIDR blocks."
+    condition = (
+      length(var.database_subnet_cidrs) == length(var.availability_zones) &&
+      alltrue([
+        for cidr in var.database_subnet_cidrs :
+        can(cidrnetmask(cidr))
+      ])
+    )
+
+    error_message = "database_subnet_cidrs must contain one valid CIDR for each Availability Zone."
   }
 }
 
@@ -86,6 +111,7 @@ variable "flow_log_retention_days" {
       365, 400, 545, 731, 1096, 1827, 2192, 2557,
       2922, 3288, 3653
     ], var.flow_log_retention_days)
+
     error_message = "flow_log_retention_days must be a CloudWatch Logs-supported retention value."
   }
 }

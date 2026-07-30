@@ -1,16 +1,37 @@
+# Terraform working directory
 **/.terraform/*
+
+# Terraform state files
 *.tfstate
 *.tfstate.*
+
+# Terraform plan files
 *.tfplan
+tfplan
+
+# Terraform variable files
 *.tfvars
 !*.tfvars.example
+
+# Local backend configuration
 backend.tf
+
+# Local deployment output
+terraform-output.txt
+
+# Terraform crash logs
 crash.log
 crash.*.log
+
+# Terraform CLI configuration
 .terraformrc
 terraform.rc
+
+# Environment files
 .env
 .env.*
 !.env.example
+
+# Operating system files
 .DS_Store
 Thumbs.db

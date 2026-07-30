@@ -15,7 +15,7 @@ check "subnets_are_unique" {
       var.public_subnet_cidrs,
       var.application_subnet_cidrs,
       var.database_subnet_cidrs
-    ))) == length(concat(
+      ))) == length(concat(
       var.public_subnet_cidrs,
       var.application_subnet_cidrs,
       var.database_subnet_cidrs
