@@ -32,3 +32,21 @@ module "networking" {
   flow_log_traffic_type    = "ALL"
   common_tags              = local.common_tags
 }
+
+module "security" {
+  source = "../../modules/security"
+
+  name_prefix  = local.name_prefix
+  project_name = var.project_name
+  environment  = var.environment
+  vpc_id       = module.networking.vpc_id
+  common_tags  = local.common_tags
+
+  cloudtrail_log_retention_days = 365
+  cloudtrail_s3_expiration_days = 365
+  enable_key_rotation           = true
+
+  depends_on = [
+    module.networking
+  ]
+}

@@ -1,56 +1,63 @@
-# Northstar Terraform Platform
+# NorthStar Terraform Platform
 
-Production-style AWS Infrastructure as Code (IaC) project built with Terraform.
+Production-style AWS Infrastructure as Code (IaC) platform built with Terraform.
 
-This repository demonstrates how to design, deploy, validate, and manage a secure, modular AWS networking foundation using Terraform and AWS best practices. The project is structured to simulate an enterprise cloud environment and serves as the foundation for future infrastructure phases, including Security & IAM, Compute, Monitoring, and CI/CD Automation.
+This repository demonstrates how to design, deploy, validate, and manage a secure, modular AWS infrastructure platform using Terraform and AWS best practices.
+
+The project is structured to simulate an enterprise cloud environment and is being built incrementally through multiple production-style phases. The completed phases establish the networking and security foundation that future compute, monitoring, and CI/CD capabilities will build upon.
 
 ---
 
-## Project Objectives
+# Project Objectives
 
 - Build reusable Terraform modules
-- Deploy a production-style AWS networking foundation
-- Follow Infrastructure as Code (IaC) best practices
-- Implement modular, scalable, and maintainable infrastructure
+- Design enterprise AWS infrastructure using Infrastructure as Code (IaC)
+- Follow AWS Well-Architected Framework best practices
+- Implement modular, scalable, and maintainable Terraform code
 - Validate infrastructure through the AWS Management Console
-- Demonstrate complete infrastructure lifecycle management using Terraform
-- Provide an interview-ready portfolio project based on real AWS deployments
+- Demonstrate complete infrastructure lifecycle management
+- Produce an interview-ready Cloud Platform Engineering portfolio
 
 ---
 
-## Technologies
+# Technologies
 
 - Terraform
 - Amazon Web Services (AWS)
 - Amazon VPC
+- Amazon IAM
+- AWS Key Management Service (KMS)
+- AWS CloudTrail
 - Amazon CloudWatch
+- Amazon S3
+- Security Groups
 - VPC Flow Logs
 - Internet Gateway
 - NAT Gateway
 - Route Tables
-- Multi-AZ Networking
+- Multi-Availability Zone (Multi-AZ) Networking
 
 ---
 
-## Project Progress
+# Project Progress
 
 | Phase | Status |
 |--------|--------|
 | Phase 1 – Planning & Architecture | ✅ Complete |
 | Phase 2 – Repository & Terraform Foundation | ✅ Complete |
 | Phase 3 – Networking Foundation | ✅ Complete |
-| Phase 4 – Security & IAM | 🚧 In Progress |
+| Phase 4 – Security & IAM | ✅ Complete |
 | Phase 5 – Compute Layer | ⏳ Planned |
-| Phase 6 – Monitoring & Logging | ⏳ Planned |
+| Phase 6 – Monitoring & Observability | ⏳ Planned |
 | Phase 7 – CI/CD Automation | ⏳ Planned |
 
 ---
 
-## Phase 3 – Networking Foundation
+# Phase 3 – Networking Foundation
 
-The networking foundation was successfully deployed using Terraform and validated within the AWS Management Console.
+Phase 3 established the core networking architecture for the platform.
 
-### Infrastructure Deployed
+## Infrastructure Deployed
 
 - Amazon VPC
 - Public Subnets
@@ -64,13 +71,48 @@ The networking foundation was successfully deployed using Terraform and validate
 - VPC Flow Logs
 - CloudWatch Log Group
 
-Following deployment, every resource was verified in AWS before the environment was successfully removed using Terraform.
+The networking infrastructure was successfully deployed, validated within the AWS Management Console, documented, and safely removed using Terraform.
 
 ---
 
-## Deployment Workflow
+# Phase 4 – Security & IAM
 
-Deploy the infrastructure using the standard Terraform workflow:
+Phase 4 builds upon the networking foundation by implementing enterprise security services that support encryption, auditing, identity, and network segmentation.
+
+The objective of this phase was to create a production-style security architecture aligned with AWS security best practices and the AWS Well-Architected Framework.
+
+## Security Components Deployed
+
+- Customer Managed AWS KMS Key
+- KMS Alias
+- Multi-Region AWS CloudTrail
+- CloudTrail Audit S3 Bucket
+- CloudWatch Audit Log Group
+- CloudTrail IAM Delivery Role
+- Application Load Balancer Security Group
+- Application Tier Security Group
+- Database Tier Security Group
+
+## Security Architecture
+
+Phase 4 introduces:
+
+- Customer-managed encryption
+- Centralized audit logging
+- Multi-region API activity tracking
+- Least-privilege IAM design
+- Layered network security
+- Three-tier Security Group architecture
+- CloudTrail log validation
+- Long-term audit log retention
+
+All resources were successfully deployed, validated, documented, and destroyed using Terraform.
+
+---
+
+# Deployment Workflow
+
+Deploy the infrastructure using the standard Terraform workflow.
 
 ```bash
 terraform fmt -recursive
@@ -86,7 +128,7 @@ terraform apply
 
 After deployment, validate the infrastructure using the AWS Management Console.
 
-Destroy the environment when finished:
+Destroy the environment when validation is complete.
 
 ```bash
 terraform destroy
@@ -94,7 +136,7 @@ terraform destroy
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
 northstar-terraform-platform/
@@ -104,7 +146,8 @@ northstar-terraform-platform/
 │   └── prod/
 │
 ├── modules/
-│   └── networking/
+│   ├── networking/
+│   └── security/
 │
 ├── diagrams/
 ├── screenshots/
@@ -114,14 +157,16 @@ northstar-terraform-platform/
 
 ---
 
-## Validation
+# Validation
 
-The deployed infrastructure was validated by confirming the successful creation and configuration of:
+Infrastructure was validated directly within the AWS Management Console.
+
+## Networking
 
 - Amazon VPC
 - Public Subnets
-- Private Application Subnets
-- Private Database Subnets
+- Application Subnets
+- Database Subnets
 - Internet Gateway
 - NAT Gateway
 - Route Tables
@@ -129,65 +174,100 @@ The deployed infrastructure was validated by confirming the successful creation 
 - VPC Flow Logs
 - CloudWatch Log Group
 
-Validation was performed directly within the AWS Management Console after the Terraform deployment completed successfully.
+## Security
+
+- Customer Managed AWS KMS Key
+- AWS CloudTrail
+- CloudTrail S3 Audit Bucket
+- CloudWatch Audit Log Group
+- CloudTrail IAM Role
+- Three-Tier Security Groups
+
+Every resource was verified after deployment before the environment was safely removed using Terraform.
 
 ---
 
-## Screenshots
+# Screenshots
 
-Deployment screenshots are available in the **screenshots/** directory and provide visual verification of the infrastructure created during Phase 3.
+Deployment screenshots are located in the **screenshots/** directory.
 
-Captured resources include:
+## Phase 3 – Networking Foundation
 
-- Amazon VPC Overview
-- Public Subnets
-- Private Application Subnets
-- Private Database Subnets
-- Internet Gateway
-- NAT Gateway
-- Route Tables
-- Route Table Associations
-- VPC Flow Logs
-- CloudWatch Log Group
+- 01 – VPC Overview
+- 02 – Subnet Overview
+- 03 – Route Table Association
+- 04 – Internet Gateway
+- 05 – NAT Gateway
+- 06 – Route Tables
+- 07 – VPC Flow Logs
+- 08 – CloudWatch Log Group
+- 09 – Networking Validation
 
-These screenshots document the successful deployment and validation of the networking foundation before the infrastructure was cleanly removed using `terraform destroy`.
+## Phase 4 – Security & IAM
+
+- 10 – Security Groups Overview
+- 11 – Customer Managed KMS Key
+- 12 – CloudTrail Overview
+- 13 – CloudTrail S3 Audit Bucket
+- 14 – CloudWatch CloudTrail Log Group
+
+All screenshots were captured after successful deployment and AWS Console validation.
 
 ---
 
-## Lessons Learned
+# Architecture Principles
 
-This phase demonstrates practical experience with:
+The platform follows enterprise cloud engineering principles.
 
-- Infrastructure as Code (IaC)
 - Modular Terraform architecture
-- AWS networking fundamentals
-- Multi-Availability Zone design
-- Infrastructure validation
-- Cloud resource lifecycle management
-- Safe infrastructure teardown
-- Production deployment workflows
+- Infrastructure as Code (IaC)
+- Least-Privilege Security
+- Defense in Depth
+- Multi-Availability Zone Design
+- Reusable Terraform Modules
+- Standardized Resource Tagging
+- Secure-by-Default Configuration
+- Production Lifecycle Management
 
 ---
 
-## Future Enhancements
+# Lessons Learned
 
-The following capabilities will be added during future phases:
+This project demonstrates practical experience with:
 
-- IAM Roles and Policies
-- Security Groups
-- Network ACLs
-- AWS KMS Encryption
+- Infrastructure as Code (Terraform)
+- Modular Terraform architecture
+- AWS networking
+- Enterprise security architecture
+- Customer-managed encryption
+- AWS CloudTrail auditing
+- CloudWatch centralized logging
+- Security Group segmentation
+- Multi-AZ networking
+- Infrastructure validation
+- Production deployment workflows
+- Safe infrastructure lifecycle management
+
+---
+
+# Future Enhancements
+
+Future phases will extend the platform with:
+
 - EC2 Compute Layer
-- Application Load Balancer (ALB)
+- Application Load Balancer
 - Auto Scaling Groups
+- IAM Instance Profiles
+- Systems Manager (SSM)
+- CloudWatch Alarms
+- SNS Notifications
 - GitHub Actions CI/CD Pipeline
-- CloudWatch Monitoring and Alerts
-- CloudTrail Logging
+- Disaster Recovery Enhancements
 - Cost Optimization
 
 ---
 
-## Author
+# Author
 
 **Demarko Little**
 
