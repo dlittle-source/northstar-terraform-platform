@@ -50,3 +50,19 @@ module "security" {
     module.networking
   ]
 }
+
+module "compute" {
+  source = "../../modules/compute"
+
+  name_prefix                   = local.name_prefix
+  application_subnet_ids        = module.networking.application_subnet_ids
+  application_security_group_id = module.security.application_security_group_id
+  instance_type                 = "t3.micro"
+  root_volume_size              = 20
+  common_tags                   = local.common_tags
+
+  depends_on = [
+    module.networking,
+    module.security
+  ]
+}
