@@ -4,7 +4,7 @@ Production-style AWS Infrastructure as Code (IaC) platform built with Terraform.
 
 This repository demonstrates how to design, deploy, validate, and manage a secure, modular AWS infrastructure platform using Terraform and AWS best practices.
 
-The project is structured to simulate an enterprise cloud environment and is being built incrementally through multiple production-style phases. The completed phases establish a secure networking, identity, auditing, and compute foundation upon which monitoring, automation, and additional application services can be built.
+The project is structured to simulate an enterprise cloud environment and is being built incrementally through multiple production-style phases. The completed phases establish a secure networking, identity, auditing, compute, and application delivery foundation upon which monitoring, automation, and additional application services can be built.
 
 ---
 
@@ -29,6 +29,9 @@ The project is structured to simulate an enterprise cloud environment and is bei
 - Amazon VPC
 - Amazon EC2
 - Amazon Elastic Block Store (EBS)
+- Elastic Load Balancing
+- Application Load Balancer (ALB)
+- Target Groups
 - AWS Identity and Access Management (IAM)
 - AWS Systems Manager
 - AWS Systems Manager Fleet Manager
@@ -43,6 +46,7 @@ The project is structured to simulate an enterprise cloud environment and is bei
 - NAT Gateway
 - Route Tables
 - Amazon Linux 2023
+- Nginx
 - Multi-Availability Zone (Multi-AZ) Networking
 
 ---
@@ -56,8 +60,9 @@ The project is structured to simulate an enterprise cloud environment and is bei
 | Phase 3 – Networking Foundation | ✅ Complete |
 | Phase 4 – Security & IAM | ✅ Complete |
 | Phase 5 – Compute Layer | ✅ Complete |
-| Phase 6 – Monitoring & Observability | ⏳ Planned |
-| Phase 7 – CI/CD Automation | ⏳ Planned |
+| Phase 6 – Application Delivery Layer | ✅ Complete |
+| Phase 7 – Monitoring & Observability | ⏳ Planned |
+| Phase 8 – CI/CD Automation | ⏳ Planned |
 
 ---
 
@@ -151,7 +156,7 @@ The application server was configured with the following production-focused cont
 
 - Deployment into a private application subnet
 - No public IPv4 address
-- Application traffic restricted to TCP port 8080 from the Application Load Balancer Security Group
+- Application traffic restricted to TCP port 80 from the Application Load Balancer Security Group
 - IAM role-based access without long-lived AWS credentials
 - Systems Manager access without opening inbound SSH
 - Encrypted 20 GiB gp3 root volume
@@ -169,7 +174,10 @@ The bootstrap process:
 - Updates Amazon Linux packages
 - Installs the Amazon CloudWatch Agent
 - Installs administrative utilities
+- Installs and configures Nginx
 - Enables the CloudWatch Agent service
+- Enables the Nginx service
+- Creates the NorthStar application landing page
 - Creates a local bootstrap validation log
 
 This approach reduces manual configuration and makes the server deployment repeatable and auditable.
@@ -186,6 +194,49 @@ Systems Manager provides secure administrative access and operational management
 - Direct exposure to the internet
 
 All compute resources were successfully deployed, validated in the AWS Management Console, documented, and safely removed using Terraform.
+
+---
+
+# Phase 6 – Application Delivery Layer
+
+Phase 6 introduced the application delivery layer for the NorthStar platform.
+
+The objective of this phase was to provide a controlled public entry point for application traffic while keeping the EC2 application server securely deployed within a private application subnet.
+
+## Application Delivery Components Deployed
+
+- Dedicated Application Delivery Terraform Module
+- Internet-Facing Application Load Balancer
+- Application Load Balancer deployed across Public Subnets
+- Multi-Availability Zone Load Balancer deployment
+- HTTP Listener on Port 80
+- Listener Rule using `/*`
+- Application Target Group
+- HTTP Health Checks on `/`
+- EC2 Target Registration
+- Automatic Traffic Routing
+- Existing Application Load Balancer Security Group
+- Existing Application Tier Security Group
+- Nginx Application Backend
+- NorthStar Application Landing Page
+
+## Application Delivery Architecture
+
+The Application Load Balancer is deployed across public subnets and provides the internet-facing entry point for the NorthStar application.
+
+Incoming HTTP traffic is accepted by the ALB listener on port 80 and forwarded through the application target group to the private EC2 application server.
+
+The Application Security Group permits HTTP port 80 traffic from the Application Load Balancer Security Group while preventing direct internet access to the application server.
+
+The application server remains deployed within a private application subnet with no public IPv4 address.
+
+Nginx is installed and configured through EC2 user data and provides the backend HTTP service used by the Application Load Balancer.
+
+The target group performs HTTP health checks against `/` and successfully reported the EC2 application target as Healthy.
+
+The NorthStar application was successfully accessed through the Application Load Balancer DNS endpoint.
+
+All Phase 6 resources were successfully deployed, validated, documented, and safely removed using Terraform.
 
 ---
 
@@ -245,6 +296,7 @@ northstar-terraform-platform/
 │   └── prod/
 │
 ├── modules/
+│   ├── application-delivery/
 │   ├── compute/
 │   │   ├── compute.tf
 │   │   ├── iam.tf
@@ -307,8 +359,48 @@ Infrastructure was validated directly within the AWS Management Console after ea
 - Encrypted 20 GiB EBS root volume
 - AWS Systems Manager managed node online
 - SSM Agent registration confirmed
+- Nginx installed and running
+
+## Application Delivery
+
+- Internet-facing Application Load Balancer created successfully
+- ALB deployed across public subnets
+- ALB status confirmed Active
+- HTTP listener configured on port 80
+- Listener rule configured using `/*`
+- Application target group created successfully
+- EC2 application server registered with target group
+- HTTP health check configured on `/`
+- Target Group status confirmed Healthy
+- Application Security Group restricted to HTTP/80 from the ALB Security Group
+- Private EC2 application server confirmed without a public IPv4 address
+- NorthStar application successfully accessed through the ALB DNS endpoint
 
 Every resource was verified after deployment before the environment was safely removed using Terraform.
+
+---
+
+# Phase 6 Validation Checklist
+
+- Terraform formatting completed successfully
+- Terraform initialization completed successfully
+- Terraform validation completed successfully
+- Terraform plan completed successfully
+- Infrastructure successfully applied
+- Application Load Balancer confirmed Active
+- ALB listener confirmed on HTTP port 80
+- Listener rule confirmed using `/*`
+- Target Group confirmed Healthy
+- EC2 application server successfully registered
+- HTTP health check on `/` confirmed
+- Application Security Group restricted to HTTP/80 from ALB Security Group
+- Private EC2 application server confirmed without a public IPv4 address
+- Nginx application backend confirmed operational
+- NorthStar application successfully accessed through ALB DNS endpoint
+- Five Phase 6 screenshots captured
+- Terraform destroy completed successfully
+- 54 resources destroyed
+- Post-destroy Terraform plan confirmed 54 to add, 0 to change, 0 to destroy
 
 ---
 
@@ -344,7 +436,104 @@ Deployment screenshots are located in the **screenshots/** directory.
 - 18 – Encrypted EC2 EBS Storage
 - 19 – Systems Manager Managed Node
 
+## Phase 6 – Application Delivery Layer
+
+- 20 – ALB Application Response
+- 21 – Target Group Healthy
+- 22 – Application Load Balancer Overview
+- 23 – ALB Listener and Rule
+- 24 – Private EC2 Application Server
+
 All screenshots were captured after successful Terraform deployment and AWS Console validation.
+
+---
+
+# Operational Runbook
+
+The following workflow can be used to deploy, validate, troubleshoot, and safely remove the NorthStar development environment.
+
+## Deployment
+
+```bash
+terraform fmt -recursive
+terraform init
+terraform validate
+terraform plan
+terraform apply
+```
+
+After deployment:
+
+- Confirm the EC2 application server is running
+- Confirm the EC2 instance has no public IPv4 address
+- Confirm the Application Load Balancer is Active
+- Confirm the HTTP listener is configured on port 80
+- Confirm the listener rule forwards traffic to the application target group
+- Confirm the EC2 instance is registered with the target group
+- Confirm the target status is Healthy
+- Confirm Nginx is running on the application server
+- Access the NorthStar application through the ALB DNS endpoint
+
+## Destruction
+
+After validation and screenshot collection:
+
+```bash
+terraform destroy
+```
+
+The Phase 6 environment was successfully destroyed with:
+
+```text
+Destroy complete! Resources: 54 destroyed.
+```
+
+A post-destroy Terraform plan returned:
+
+```text
+Plan: 54 to add, 0 to change, 0 to destroy.
+```
+
+This confirmed that the complete environment could be reproduced from the Terraform configuration.
+
+---
+
+# Troubleshooting Notes
+
+## ALB and Target Group Naming Constraints
+
+During Phase 6, AWS naming constraints affected the Application Load Balancer and Target Group resource names.
+
+The resource names were adjusted to comply with AWS naming requirements while maintaining the NorthStar naming convention.
+
+## Port 8080 to Port 80 Alignment
+
+The earlier compute configuration referenced TCP port 8080 for application traffic.
+
+During Phase 6, the application delivery path was aligned on HTTP/TCP port 80.
+
+The ALB listener, Target Group, Application Security Group, EC2 application server, and Nginx backend were configured to use port 80.
+
+## Nginx Backend Requirement
+
+The Application Load Balancer required a functioning HTTP backend on the registered EC2 target.
+
+Nginx was installed and configured through EC2 user data to provide the backend web service and NorthStar application landing page.
+
+## Unhealthy Target Troubleshooting
+
+Target health required validation across multiple components:
+
+- EC2 instance state
+- Target registration
+- Target Group port
+- HTTP health check path
+- Application Security Group rules
+- ALB Security Group rules
+- Nginx service status
+- Backend listening port
+
+After the application delivery configuration was aligned, the EC2 target successfully reported a Healthy status.
 
 ---
 
@@ -358,7 +547,9 @@ The platform follows enterprise cloud engineering principles.
 - Least-privilege security
 - Defense in depth
 - Private application compute
+- Controlled application delivery
 - Multi-Availability Zone network design
+- Multi-Availability Zone load balancing
 - Reusable Terraform modules
 - Standardized resource naming
 - Standardized enterprise tagging
@@ -378,6 +569,7 @@ The platform follows enterprise cloud engineering principles.
 - Centralized CloudTrail auditing
 - Private application server placement
 - Layered Security Group controls
+- ALB-to-application Security Group restriction
 - IMDSv2 enforcement
 - IAM roles instead of embedded credentials
 - Systems Manager instead of public SSH access
@@ -387,6 +579,7 @@ The platform follows enterprise cloud engineering principles.
 
 - Reusable Terraform modules
 - Automated server bootstrap
+- Nginx application configuration through user data
 - Standard Terraform validation workflow
 - AWS Console deployment verification
 - Version-controlled infrastructure
@@ -395,6 +588,8 @@ The platform follows enterprise cloud engineering principles.
 ## Reliability
 
 - Multi-Availability Zone network design
+- Multi-Availability Zone Application Load Balancer
+- Target Group health checks
 - Repeatable infrastructure deployments
 - Terraform-managed dependencies
 - Application, public, and database tier separation
@@ -421,6 +616,7 @@ This project demonstrates practical experience with:
 - IAM roles and instance profiles
 - AWS Systems Manager
 - EC2 user data automation
+- Nginx application configuration
 - CloudWatch Agent integration
 - Encrypted EBS storage
 - IMDSv2 security enforcement
@@ -430,27 +626,15 @@ This project demonstrates practical experience with:
 - CloudWatch centralized logging
 - Security Group segmentation
 - Multi-AZ networking
+- Application Load Balancer deployment
+- Target Groups and health checks
+- Listener rules and automatic traffic routing
+- Private application delivery
+- Infrastructure troubleshooting
 - Infrastructure validation
 - Production deployment workflows
 - Safe infrastructure lifecycle management
 - Git-based infrastructure change tracking
-
----
-
-# Hiring Manager Talking Points
-
-This project demonstrates the ability to:
-
-- Design modular AWS infrastructure using Terraform
-- Deploy application workloads into private subnets
-- Integrate Terraform modules through clearly defined inputs and outputs
-- Secure EC2 instances without relying on public IP addresses or inbound SSH
-- Implement IAM roles and instance profiles for AWS service access
-- Enforce encryption and modern EC2 metadata security
-- Automate Linux server initialization through user data
-- Validate deployed infrastructure through Terraform and the AWS Management Console
-- Document architecture decisions and operational evidence
-- Reproduce and safely destroy complete AWS environments
 
 ---
 
@@ -462,8 +646,6 @@ Future phases will extend the platform with:
 - Centralized Application Logging
 - SNS Notifications
 - Monitoring Dashboards
-- Application Load Balancer
-- Target Groups and Health Checks
 - Auto Scaling Groups
 - GitHub Actions CI/CD Pipeline
 - Terraform Automation

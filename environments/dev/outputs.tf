@@ -27,3 +27,18 @@ output "flow_log_group_name" {
   description = "CloudWatch Logs group receiving VPC Flow Logs."
   value       = module.networking.flow_log_group_name
 }
+
+output "alb_dns_name" {
+  description = "Public DNS name of the NorthStar Application Load Balancer."
+  value       = module.application_delivery.alb_dns_name
+}
+
+output "alb_arn" {
+  description = "ARN of the NorthStar Application Load Balancer."
+  value       = module.application_delivery.alb_arn
+}
+
+output "target_group_arn" {
+  description = "ARN of the NorthStar application target group."
+  value       = module.application_delivery.target_group_arn
+}

@@ -66,3 +66,21 @@ module "compute" {
     module.security
   ]
 }
+
+module "application_delivery" {
+  source = "../../modules/application-delivery"
+
+  name_prefix           = local.name_prefix
+  project_name          = var.project_name
+  environment           = var.environment
+  vpc_id                = module.networking.vpc_id
+  public_subnet_ids     = module.networking.public_subnet_ids
+  alb_security_group_id = module.security.alb_security_group_id
+  ec2_instance_id       = module.compute.instance_id
+
+  depends_on = [
+    module.networking,
+    module.security,
+    module.compute
+  ]
+}
