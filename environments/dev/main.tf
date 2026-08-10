@@ -84,3 +84,20 @@ module "application_delivery" {
     module.compute
   ]
 }
+
+module "monitoring" {
+  source = "../../modules/monitoring"
+
+  name_prefix      = local.name_prefix
+  project_name     = var.project_name
+  environment      = var.environment
+  instance_id      = module.compute.instance_id
+  alb_arn          = module.application_delivery.alb_arn
+  target_group_arn = module.application_delivery.target_group_arn
+  common_tags      = local.common_tags
+
+  depends_on = [
+    module.compute,
+    module.application_delivery
+  ]
+}

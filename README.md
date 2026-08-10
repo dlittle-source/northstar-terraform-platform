@@ -4,7 +4,7 @@ Production-style AWS Infrastructure as Code (IaC) platform built with Terraform.
 
 This repository demonstrates how to design, deploy, validate, and manage a secure, modular AWS infrastructure platform using Terraform and AWS best practices.
 
-The project is structured to simulate an enterprise cloud environment and is being built incrementally through multiple production-style phases. The completed phases establish a secure networking, identity, auditing, compute, and application delivery foundation upon which monitoring, automation, and additional application services can be built.
+The project is structured to simulate an enterprise cloud environment and is being built incrementally through multiple production-style phases. The completed phases establish a secure networking, identity, auditing, compute, application delivery, monitoring, and observability foundation upon which automation and additional application services can be built.
 
 ---
 
@@ -16,6 +16,7 @@ The project is structured to simulate an enterprise cloud environment and is bei
 - Implement modular, scalable, and maintainable Terraform code
 - Deploy application compute resources into private subnets
 - Apply least-privilege identity and network security controls
+- Implement infrastructure monitoring, operational dashboards, and automated alerting
 - Validate infrastructure through the AWS Management Console
 - Demonstrate complete infrastructure lifecycle management
 - Produce an interview-ready Cloud Platform Engineering portfolio
@@ -36,6 +37,10 @@ The project is structured to simulate an enterprise cloud environment and is bei
 - AWS Systems Manager
 - AWS Systems Manager Fleet Manager
 - Amazon CloudWatch
+- Amazon CloudWatch Dashboards
+- Amazon CloudWatch Metrics
+- Amazon CloudWatch Alarms
+- Amazon Simple Notification Service (SNS)
 - Amazon CloudWatch Agent
 - AWS Key Management Service (KMS)
 - AWS CloudTrail
@@ -61,7 +66,7 @@ The project is structured to simulate an enterprise cloud environment and is bei
 | Phase 4 – Security & IAM | ✅ Complete |
 | Phase 5 – Compute Layer | ✅ Complete |
 | Phase 6 – Application Delivery Layer | ✅ Complete |
-| Phase 7 – Monitoring & Observability | ⏳ Planned |
+| Phase 7 – Monitoring & Observability | ✅ Complete |
 | Phase 8 – CI/CD Automation | ⏳ Planned |
 
 ---
@@ -240,6 +245,70 @@ All Phase 6 resources were successfully deployed, validated, documented, and saf
 
 ---
 
+# Phase 7 – Monitoring & Observability
+
+Phase 7 introduced a centralized monitoring and observability layer for the NorthStar platform.
+
+The objective of this phase was to provide operational visibility into the EC2 application server, Application Load Balancer, and application target health while implementing automated infrastructure alarms and an alert notification path.
+
+The monitoring resources are managed through a dedicated reusable Terraform module that consumes outputs from the existing compute and application delivery modules without redesigning the working infrastructure established during Phases 1–6.
+
+## Monitoring & Observability Components Deployed
+
+- Dedicated Monitoring Terraform Module
+- Amazon CloudWatch Dashboard
+- EC2 CPU Utilization Monitoring
+- EC2 Network Monitoring
+- EC2 Status Check Monitoring
+- Application Load Balancer Request Monitoring
+- Application Load Balancer Target Response Time Monitoring
+- Application Load Balancer Target 5XX Monitoring
+- Target Group Healthy Host Monitoring
+- Target Group Unhealthy Host Monitoring
+- Five Amazon CloudWatch Alarms
+- Amazon SNS Operations Alert Topic
+
+## CloudWatch Dashboard
+
+A centralized CloudWatch dashboard was created to provide visibility into the primary NorthStar infrastructure and application delivery metrics.
+
+The dashboard includes monitoring for:
+
+- EC2 CPU Utilization
+- EC2 Network In
+- EC2 Network Out
+- Application Load Balancer Request Count
+- Application Target 5XX Errors
+- Application Target Response Time
+- Target Group Healthy Host Count
+- Target Group Unhealthy Host Count
+
+The dashboard provides a single operational view of compute utilization, application traffic, response performance, and target health.
+
+## CloudWatch Alarms
+
+Five operational CloudWatch alarms were implemented:
+
+- EC2 High CPU Utilization
+- EC2 Status Check Failure
+- ALB Unhealthy Target
+- ALB Target 5XX Errors
+- ALB High Target Response Time
+
+During validation, all five NorthStar monitoring alarms successfully reported an `OK` state.
+
+## SNS Operations Alerting
+
+An Amazon SNS topic named `northstar-portal-dev-operations-alerts` was created as the notification destination for CloudWatch alarm actions.
+
+The monitoring alarms are configured to publish alarm notifications to the SNS operations topic.
+
+No personal email subscription is stored in the Terraform repository, keeping the monitoring module reusable and preventing personal notification endpoints from being hard-coded into the infrastructure configuration.
+
+All Phase 7 resources were successfully deployed, validated in the AWS Management Console, documented, and safely removed using Terraform.
+
+---
+
 # Deployment Workflow
 
 Deploy the infrastructure using the standard Terraform workflow.
@@ -302,6 +371,11 @@ northstar-terraform-platform/
 │   │   ├── iam.tf
 │   │   ├── locals.tf
 │   │   ├── user-data.sh
+│   │   └── variables.tf
+│   │
+│   ├── monitoring/
+│   │   ├── main.tf
+│   │   ├── outputs.tf
 │   │   └── variables.tf
 │   │
 │   ├── networking/
@@ -376,31 +450,43 @@ Infrastructure was validated directly within the AWS Management Console after ea
 - Private EC2 application server confirmed without a public IPv4 address
 - NorthStar application successfully accessed through the ALB DNS endpoint
 
+## Monitoring & Observability
+
+- CloudWatch dashboard created successfully
+- EC2 CPU utilization metrics confirmed
+- EC2 network metrics confirmed
+- Application Load Balancer metrics confirmed
+- ALB Request Count activity confirmed
+- Target Group health monitoring configured
+- Five NorthStar CloudWatch alarms created successfully
+- All five NorthStar alarms confirmed in `OK` state during validation
+- SNS operations alert topic created successfully
+- CloudWatch alarms configured with SNS alarm actions
+
 Every resource was verified after deployment before the environment was safely removed using Terraform.
 
 ---
 
-# Phase 6 Validation Checklist
+# Phase 7 Validation Checklist
 
 - Terraform formatting completed successfully
 - Terraform initialization completed successfully
 - Terraform validation completed successfully
 - Terraform plan completed successfully
+- Terraform plan confirmed 61 to add, 0 to change, 0 to destroy
 - Infrastructure successfully applied
-- Application Load Balancer confirmed Active
-- ALB listener confirmed on HTTP port 80
-- Listener rule confirmed using `/*`
-- Target Group confirmed Healthy
-- EC2 application server successfully registered
-- HTTP health check on `/` confirmed
-- Application Security Group restricted to HTTP/80 from ALB Security Group
-- Private EC2 application server confirmed without a public IPv4 address
-- Nginx application backend confirmed operational
-- NorthStar application successfully accessed through ALB DNS endpoint
-- Five Phase 6 screenshots captured
+- 61 resources successfully created
+- CloudWatch dashboard successfully deployed
+- EC2 monitoring metrics confirmed
+- Application Load Balancer monitoring metrics confirmed
+- Target Group health monitoring configured
+- Five CloudWatch alarms successfully deployed
+- Five NorthStar alarms confirmed in `OK` state
+- SNS operations alert topic successfully deployed
+- Five Phase 7 screenshots captured
 - Terraform destroy completed successfully
-- 54 resources destroyed
-- Post-destroy Terraform plan confirmed 54 to add, 0 to change, 0 to destroy
+- 61 resources destroyed
+- Post-destroy Terraform plan confirmed 61 to add, 0 to change, 0 to destroy
 
 ---
 
@@ -444,6 +530,14 @@ Deployment screenshots are located in the **screenshots/** directory.
 - 23 – ALB Listener and Rule
 - 24 – Private EC2 Application Server
 
+## Phase 7 – Monitoring & Observability
+
+- 25 – CloudWatch Dashboard
+- 26 – CloudWatch Alarms
+- 27 – ALB Monitoring Metrics
+- 28 – EC2 Monitoring Metrics
+- 29 – SNS Operations Alert Topic
+
 All screenshots were captured after successful Terraform deployment and AWS Console validation.
 
 ---
@@ -473,6 +567,11 @@ After deployment:
 - Confirm the target status is Healthy
 - Confirm Nginx is running on the application server
 - Access the NorthStar application through the ALB DNS endpoint
+- Confirm the NorthStar CloudWatch dashboard exists
+- Confirm EC2 monitoring metrics are reporting
+- Confirm Application Load Balancer monitoring metrics are reporting
+- Confirm all five NorthStar CloudWatch alarms exist
+- Confirm the SNS operations alert topic exists
 
 ## Destruction
 
@@ -482,16 +581,16 @@ After validation and screenshot collection:
 terraform destroy
 ```
 
-The Phase 6 environment was successfully destroyed with:
+The Phase 7 environment was successfully destroyed with:
 
 ```text
-Destroy complete! Resources: 54 destroyed.
+Destroy complete! Resources: 61 destroyed.
 ```
 
 A post-destroy Terraform plan returned:
 
 ```text
-Plan: 54 to add, 0 to change, 0 to destroy.
+Plan: 61 to add, 0 to change, 0 to destroy.
 ```
 
 This confirmed that the complete environment could be reproduced from the Terraform configuration.
@@ -535,6 +634,12 @@ Target health required validation across multiple components:
 
 After the application delivery configuration was aligned, the EC2 target successfully reported a Healthy status.
 
+## CloudWatch Metric Availability
+
+CloudWatch metrics may require several minutes after infrastructure deployment before data points appear on a newly created dashboard.
+
+During Phase 7 validation, EC2 and Application Load Balancer activity was confirmed in CloudWatch while the monitoring configuration and alarms were successfully deployed.
+
 ---
 
 # Architecture Principles
@@ -548,6 +653,9 @@ The platform follows enterprise cloud engineering principles.
 - Defense in depth
 - Private application compute
 - Controlled application delivery
+- Centralized infrastructure monitoring
+- Operational metrics and dashboards
+- Automated infrastructure alerting
 - Multi-Availability Zone network design
 - Multi-Availability Zone load balancing
 - Reusable Terraform modules
@@ -578,6 +686,10 @@ The platform follows enterprise cloud engineering principles.
 ## Operational Excellence
 
 - Reusable Terraform modules
+- Dedicated monitoring and observability module
+- Centralized CloudWatch operational dashboard
+- Automated CloudWatch alarms
+- SNS-based operations alerting
 - Automated server bootstrap
 - Nginx application configuration through user data
 - Standard Terraform validation workflow
@@ -590,6 +702,10 @@ The platform follows enterprise cloud engineering principles.
 - Multi-Availability Zone network design
 - Multi-Availability Zone Application Load Balancer
 - Target Group health checks
+- EC2 status check monitoring
+- Unhealthy target monitoring
+- Application response-time monitoring
+- Application 5XX error monitoring
 - Repeatable infrastructure deployments
 - Terraform-managed dependencies
 - Application, public, and database tier separation
@@ -624,6 +740,13 @@ This project demonstrates practical experience with:
 - Customer-managed encryption
 - AWS CloudTrail auditing
 - CloudWatch centralized logging
+- CloudWatch infrastructure metrics
+- CloudWatch dashboards
+- CloudWatch alarms
+- Amazon SNS operational alerting
+- EC2 performance monitoring
+- Application Load Balancer monitoring
+- Target Group health monitoring
 - Security Group segmentation
 - Multi-AZ networking
 - Application Load Balancer deployment
@@ -642,15 +765,13 @@ This project demonstrates practical experience with:
 
 Future phases will extend the platform with:
 
-- CloudWatch Metrics and Alarms
 - Centralized Application Logging
-- SNS Notifications
-- Monitoring Dashboards
 - Auto Scaling Groups
 - GitHub Actions CI/CD Pipeline
 - Terraform Automation
 - Disaster Recovery Enhancements
 - Cost Optimization Controls
+- Enhanced NorthStar Application Experience
 
 ---
 
