@@ -11,7 +11,7 @@ tfplan
 
 # Terraform variable files
 *.tfvars
-!*.tfvars.example
+!**/terraform.ci.tfvars
 
 # Local backend configuration
 backend.tf

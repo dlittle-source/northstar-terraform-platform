@@ -58,4 +58,4 @@ jobs:
 
       - name: Terraform Plan
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan -input=false -no-color
+        run: terraform plan -input=false -no-color -var-file=terraform.ci.tfvars
