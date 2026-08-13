@@ -27,7 +27,10 @@ resource "aws_instance" "application" {
   subnet_id              = var.application_subnet_ids[0]
   vpc_security_group_ids = [var.application_security_group_id]
   iam_instance_profile   = aws_iam_instance_profile.compute.name
-  user_data              = file("${path.module}/user-data.sh")
+
+  user_data = templatefile("${path.module}/user-data.sh", {
+    northstar_html = base64gzip(file("${path.module}/index.html"))
+  })
 
   associate_public_ip_address = false
 

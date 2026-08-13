@@ -30,28 +30,24 @@ systemctl enable nginx
 systemctl start nginx
 
 ###############################################################################
-# NorthStar Application Landing Page
+# NorthStar Application Deployment
 ###############################################################################
 
-cat <<'EOF' > /usr/share/nginx/html/index.html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NorthStar Terraform Platform</title>
-</head>
-<body>
-  <h1>NorthStar Terraform Platform</h1>
-  <h2>Application Delivery Layer</h2>
-  <p>NorthStar application server is healthy and receiving traffic through the Application Load Balancer.</p>
-</body>
-</html>
-EOF
+echo '${northstar_html}' | base64 -d | gunzip > /usr/share/nginx/html/index.html
+
+chmod 644 /usr/share/nginx/html/index.html
+
+###############################################################################
+# Validate and Reload Nginx
+###############################################################################
+
+nginx -t
+systemctl reload nginx
 
 ###############################################################################
 # Bootstrap Logging
 ###############################################################################
 
 echo "NorthStar Compute Layer initialized successfully on $(date)" > /var/log/northstar-bootstrap.log
+echo "NorthStar Operations application deployed successfully" >> /var/log/northstar-bootstrap.log
 echo "Nginx application service started successfully" >> /var/log/northstar-bootstrap.log

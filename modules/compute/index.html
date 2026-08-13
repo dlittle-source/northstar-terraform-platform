@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>NorthStar Operations | Cloud Infrastructure Platform</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 75% 10%, rgba(43, 111, 255, 0.16), transparent 28%),
+        radial-gradient(circle at 15% 35%, rgba(0, 210, 255, 0.08), transparent 25%),
+        #07101f;
+      color: #eef5ff;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1180px, 90%);
+      margin: 0 auto;
+    }
+
+    /* Navigation */
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(18px);
+      background: rgba(7, 16, 31, 0.82);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .nav-inner {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2d7cff, #00d0ff);
+      color: white;
+      box-shadow: 0 0 30px rgba(45, 124, 255, 0.35);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      color: #9fb0c9;
+      font-size: 0.92rem;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    /* Hero */
+
+    .hero {
+      min-height: 680px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      gap: 70px;
+      padding: 95px 0 85px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid rgba(88, 167, 255, 0.25);
+      border-radius: 999px;
+      background: rgba(45, 124, 255, 0.08);
+      color: #8dc8ff;
+      font-size: 0.78rem;
+      letter-spacing: 0.11em;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #39e99e;
+      box-shadow: 0 0 12px rgba(57, 233, 158, 0.8);
+    }
+
+    h1 {
+      font-size: clamp(3rem, 6vw, 5.4rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+      margin-bottom: 27px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #ffffff, #77baff 55%, #00dcff);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-copy {
+      max-width: 630px;
+      color: #a5b5ca;
+      font-size: 1.08rem;
+      margin-bottom: 34px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .button {
+      padding: 13px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .button-primary {
+      background: linear-gradient(135deg, #2d7cff, #1598ff);
+      box-shadow: 0 10px 30px rgba(45, 124, 255, 0.25);
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      color: #c9d5e5;
+    }
+
+    /* Dashboard */
+
+    .dashboard {
+      background: linear-gradient(
+        180deg,
+        rgba(18, 37, 65, 0.85),
+        rgba(9, 22, 40, 0.95)
+      );
+      border: 1px solid rgba(108, 170, 255, 0.17);
+      border-radius: 20px;
+      box-shadow:
+        0 40px 90px rgba(0, 0, 0, 0.42),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+    }
+
+    .dash-top {
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .dash-title {
+      font-size: 0.76rem;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+      color: #dbe9fa;
+    }
+
+    .operational {
+      color: #59e8ad;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .dash-body {
+      padding: 24px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .metric {
+      padding: 17px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.055);
+      border-radius: 12px;
+    }
+
+    .metric-label {
+      color: #7f92ab;
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric-value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-top: 5px;
+    }
+
+    .metric-small {
+      color: #48dda5;
+      font-size: 0.72rem;
+      margin-top: 2px;
+    }
+
+    .chart {
+      height: 120px;
+      margin-top: 20px;
+      border-radius: 12px;
+      background:
+        linear-gradient(rgba(45, 124, 255, 0.06), rgba(45, 124, 255, 0)),
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.035) 0,
+          rgba(255, 255, 255, 0.035) 1px,
+          transparent 1px,
+          transparent 30px
+        );
+      display: flex;
+      align-items: end;
+      gap: 9px;
+      padding: 18px;
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 4px 4px 0 0;
+      background: linear-gradient(to top, #246dff, #00c9ff);
+      opacity: 0.85;
+    }
+
+    /* Stats */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      margin: 20px 0 110px;
+    }
+
+    .stat {
+      padding: 35px 20px;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .stat:last-child {
+      border-right: 0;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 2px;
+    }
+
+    .stat span {
+      color: #8193aa;
+      font-size: 0.82rem;
+    }
+
+    /* Sections */
+
+    section {
+      padding: 90px 0;
+    }
+
+    .section-tag {
+      color: #62b6ff;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-weight: 800;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: -0.04em;
+      line-height: 1.08;
+      margin-bottom: 18px;
+    }
+
+    .section-copy {
+      color: #94a5bc;
+      max-width: 680px;
+      margin-bottom: 45px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      padding: 28px;
+      min-height: 230px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 15px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(80, 162, 255, 0.35);
+    }
+
+    .icon {
+      width: 43px;
+      height: 43px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(44, 127, 255, 0.1);
+      border: 1px solid rgba(60, 145, 255, 0.2);
+      color: #64bdff;
+      margin-bottom: 23px;
+      font-weight: 900;
+    }
+
+    .card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #8798af;
+      font-size: 0.9rem;
+    }
+
+    /* Architecture */
+
+    .architecture {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .architecture-box {
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .layer {
+      padding: 15px 18px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 11px 0;
+      border: 1px solid rgba(72, 150, 255, 0.2);
+      background: rgba(43, 111, 255, 0.07);
+      color: #c5dcf5;
+      font-weight: 700;
+      font-size: 0.87rem;
+    }
+
+    .arrow {
+      text-align: center;
+      color: #4d94db;
+    }
+
+    .technology {
+      color: #79baff;
+      margin-top: 22px;
+      text-align: center;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+    }
+
+    /* Status */
+
+    .status-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 45px;
+      padding: 35px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 18px;
+      background: linear-gradient(
+        120deg,
+        rgba(30, 78, 150, 0.09),
+        rgba(255, 255, 255, 0.015)
+      );
+    }
+
+    .service {
+      display: flex;
+      justify-content: space-between;
+      padding: 13px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: #a9b9cc;
+    }
+
+    .healthy {
+      color: #50dca4;
+    }
+
+    /* CTA */
+
+    .cta {
+      margin: 80px auto;
+      padding: 65px 30px;
+      text-align: center;
+      border-radius: 22px;
+      border: 1px solid rgba(72, 155, 255, 0.18);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(45, 124, 255, 0.18), transparent 50%),
+        rgba(255, 255, 255, 0.02);
+    }
+
+    .cta p {
+      color: #93a4bb;
+      margin: 15px auto 28px;
+      max-width: 600px;
+    }
+
+    /* Footer */
+
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 35px 0;
+      color: #63778f;
+      font-size: 0.82rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Mobile */
+
+    @media (max-width: 850px) {
+      .hero,
+      .architecture,
+      .status-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 70px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat:nth-child(2) {
+        border-right: 0;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .stats,
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat {
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      h1 {
+        font-size: 3.1rem;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav>
+  <div class="container nav-inner">
+    <a href="#" class="brand">
+      <span class="brand-mark">N</span>
+      NORTHSTAR
+    </a>
+
+    <div class="nav-links">
+      <a href="#platform">Platform</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#operations">Operations</a>
+      <a href="#technology">Technology</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- Hero -->
+
+  <div class="container hero">
+    <div>
+      <div class="eyebrow">
+        <span class="status-dot"></span>
+        CLOUD PLATFORM ONLINE
+      </div>
+
+      <h1>
+        Cloud infrastructure.<br>
+        <span class="gradient-text">Built for reliability.</span>
+      </h1>
+
+      <p class="hero-copy">
+        NorthStar provides secure, automated and observable cloud infrastructure
+        designed for modern application workloads and repeatable operations.
+      </p>
+
+      <div class="actions">
+        <a href="#platform" class="button button-primary">Explore Platform</a>
+        <a href="#architecture" class="button button-secondary">View Architecture</a>
+      </div>
+    </div>
+
+    <div class="dashboard">
+      <div class="dash-top">
+        <span class="dash-title">NORTHSTAR OPERATIONS</span>
+        <span class="operational">● OPERATIONAL</span>
+      </div>
+
+      <div class="dash-body">
+        <div class="metric-grid">
+
+          <div class="metric">
+            <div class="metric-label">Platform</div>
+            <div class="metric-value">Healthy</div>
+            <div class="metric-small">All systems operational</div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-label">Infrastructure</div>
+            <div class="metric-value">61</div>
+            <div class="metric-small">Managed resources</div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-label">Deployment</div>
+            <div class="metric-value">CI/CD</div>
+            <div class="metric-small">Automated pipeline</div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-label">Monitoring</div>
+            <div class="metric-value">Active</div>
+            <div class="metric-small">CloudWatch telemetry</div>
+          </div>
+
+        </div>
+
+        <div class="chart">
+          <div class="bar" style="height: 32%;"></div>
+          <div class="bar" style="height: 48%;"></div>
+          <div class="bar" style="height: 40%;"></div>
+          <div class="bar" style="height: 68%;"></div>
+          <div class="bar" style="height: 53%;"></div>
+          <div class="bar" style="height: 79%;"></div>
+          <div class="bar" style="height: 62%;"></div>
+          <div class="bar" style="height: 87%;"></div>
+          <div class="bar" style="height: 72%;"></div>
+          <div class="bar" style="height: 92%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Platform Statistics -->
+
+  <div class="container stats">
+    <div class="stat">
+      <strong>100%</strong>
+      <span>Infrastructure as Code</span>
+    </div>
+
+    <div class="stat">
+      <strong>8</strong>
+      <span>Engineering Phases</span>
+    </div>
+
+    <div class="stat">
+      <strong>61</strong>
+      <span>AWS Resources</span>
+    </div>
+
+    <div class="stat">
+      <strong>CI/CD</strong>
+      <span>Automated Delivery</span>
+    </div>
+  </div>
+
+  <!-- Platform -->
+
+  <section id="platform">
+    <div class="container">
+      <div class="section-tag">01 / Platform</div>
+
+      <h2>
+        Infrastructure engineered<br>
+        for modern operations.
+      </h2>
+
+      <p class="section-copy">
+        NorthStar combines automation, security and operational visibility into
+        a repeatable AWS application platform.
+      </p>
+
+      <div class="cards">
+
+        <div class="card">
+          <div class="icon">01</div>
+          <h3>Automated Infrastructure</h3>
+
+          <p>
+            Infrastructure is provisioned consistently through Terraform and
+            automated deployment workflows instead of manual configuration.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="icon">02</div>
+          <h3>Secure by Design</h3>
+
+          <p>
+            Private workloads, controlled IAM access, encryption and centralized
+            auditing are integrated directly into the platform.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="icon">03</div>
+          <h3>Built for Operations</h3>
+
+          <p>
+            Health metrics, monitoring, alerts and application visibility provide
+            insight into platform behavior and availability.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+
+  <section id="architecture">
+    <div class="container architecture">
+
+      <div>
+        <div class="section-tag">02 / Architecture</div>
+
+        <h2>
+          Secure application delivery
+          from edge to workload.
+        </h2>
+
+        <p class="section-copy">
+          Internet-facing traffic is distributed through an Application Load
+          Balancer while application compute remains protected inside private
+          network segments.
+        </p>
+
+        <p style="color: #7890aa;">
+          Security, observability, auditing and deployment automation operate
+          alongside the application infrastructure.
+        </p>
+      </div>
+
+      <div class="architecture-box">
+        <div class="layer">Internet Traffic</div>
+        <div class="arrow">↓</div>
+
+        <div class="layer">Application Load Balancer</div>
+        <div class="arrow">↓</div>
+
+        <div class="layer">Private Application Network</div>
+        <div class="arrow">↓</div>
+
+        <div class="layer">EC2 Application Compute</div>
+
+        <div class="technology">
+          SECURITY · MONITORING · AUTOMATION
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Operations -->
+
+  <section id="operations">
+    <div class="container">
+      <div class="section-tag">03 / Operations</div>
+
+      <h2>
+        Designed to be operated,<br>
+        not simply deployed.
+      </h2>
+
+      <p class="section-copy">
+        Platform health, workload delivery and monitoring capabilities are built
+        into the NorthStar operating model.
+      </p>
+
+      <div class="status-panel">
+
+        <div>
+          <div class="service">
+            <span>Application</span>
+            <span class="healthy">● Healthy</span>
+          </div>
+
+          <div class="service">
+            <span>Load Balancer</span>
+            <span class="healthy">● Healthy</span>
+          </div>
+
+          <div class="service">
+            <span>Compute Layer</span>
+            <span class="healthy">● Healthy</span>
+          </div>
+
+          <div class="service">
+            <span>Monitoring</span>
+            <span class="healthy">● Active</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="service">
+            <span>Infrastructure</span>
+            <strong>Terraform</strong>
+          </div>
+
+          <div class="service">
+            <span>Deployment</span>
+            <strong>GitHub Actions</strong>
+          </div>
+
+          <div class="service">
+            <span>Authentication</span>
+            <strong>AWS OIDC</strong>
+          </div>
+
+          <div class="service">
+            <span>Observability</span>
+            <strong>CloudWatch</strong>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology -->
+
+  <section id="technology">
+    <div class="container">
+      <div class="section-tag">04 / Technology</div>
+
+      <h2>
+        One platform.<br>
+        Multiple engineering disciplines.
+      </h2>
+
+      <div class="cards">
+
+        <div class="card">
+          <div class="icon">AWS</div>
+          <h3>Cloud Platform</h3>
+
+          <p>
+            AWS networking, compute, application delivery, IAM, monitoring,
+            encryption and operational services.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="icon">TF</div>
+          <h3>Infrastructure as Code</h3>
+
+          <p>
+            Reusable Terraform modules and remote state provide repeatable,
+            version-controlled infrastructure deployments.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="icon">CI</div>
+          <h3>Automated Delivery</h3>
+
+          <p>
+            GitHub Actions and AWS OIDC provide automated infrastructure
+            validation and deployment without long-lived AWS credentials.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+
+  <div class="container cta">
+    <div class="section-tag">NorthStar Operations</div>
+
+    <h2>
+      Infrastructure should be<br>
+      repeatable by design.
+    </h2>
+
+    <p>
+      NorthStar demonstrates a secure AWS platform built around automation,
+      observability and infrastructure lifecycle management.
+    </p>
+
+    <a href="#architecture" class="button button-primary">
+      Explore the Architecture
+    </a>
+  </div>
+
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>© NorthStar Operations</span>
+    <span>Powered by AWS · Terraform · GitHub Actions</span>
+  </div>
+</footer>
+
+</body>
+</html>
